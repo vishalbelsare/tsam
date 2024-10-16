@@ -81,19 +81,19 @@ def test_cluster_order():
 
     # sort the typical days in order to avoid error assertion due to different order
     sortedDaysOrig1 = (
-        orig_raw_predefClusterOrder.sum(axis=0, level=0).sort_values("GHI").index
+        orig_raw_predefClusterOrder.groupby(level=0).sum().sort_values("GHI").index
     )
     sortedDaysTest1 = (
-        typPeriods_predefClusterOrder.sum(axis=0, level=0).sort_values("GHI").index
+        typPeriods_predefClusterOrder.groupby(level=0).sum().sort_values("GHI").index
     )
 
     sortedDaysOrig2 = (
-        orig_raw_predefClusterOrderAndClusterCenters.sum(axis=0, level=0)
+        orig_raw_predefClusterOrderAndClusterCenters.groupby(level=0).sum()
         .sort_values("GHI")
         .index
     )
     sortedDaysTest2 = (
-        typPeriods_predefClusterOrderAndClusterCenters.sum(axis=0, level=0)
+        typPeriods_predefClusterOrderAndClusterCenters.groupby(level=0).sum()
         .sort_values("GHI")
         .index
     )
@@ -103,21 +103,21 @@ def test_cluster_order():
         orig_raw_predefClusterOrder[typPeriods_predefClusterOrder.columns]
         .unstack()
         .loc[sortedDaysOrig1, :]
-        .stack()
+        .stack(future_stack=True,)
     )
-    test1 = typPeriods_predefClusterOrder.unstack().loc[sortedDaysTest1, :].stack()
+    test1 = typPeriods_predefClusterOrder.unstack().loc[sortedDaysTest1, :].stack(future_stack=True,)
     orig2 = (
         orig_raw_predefClusterOrderAndClusterCenters[
             typPeriods_predefClusterOrderAndClusterCenters.columns
         ]
         .unstack()
         .loc[sortedDaysOrig2, :]
-        .stack()
+        .stack(future_stack=True,)
     )
     test2 = (
         typPeriods_predefClusterOrderAndClusterCenters.unstack()
         .loc[sortedDaysTest2, :]
-        .stack()
+        .stack(future_stack=True,)
     )
 
     np.testing.assert_array_almost_equal(
